@@ -250,39 +250,35 @@
     msgEl.textContent = msg;
   }
 
-    function api(action, payload) {
-    return new Promise((resolve, reject) => {
-        const cbName = "cb_" + Math.random().toString(36).slice(2);
-        const payloadEnc = encodeURIComponent(JSON.stringify(payload || {}));
-        const url = `${APPS_SCRIPT_URL}?action=${encodeURIComponent(action)}&payload=${payloadEnc}&callback=${cbName}`;
+  function api(action, payload) {
+  return new Promise((resolve, reject) => {
+    const cbName = "cb_" + Math.random().toString(36).slice(2);
+    const payloadEnc = encodeURIComponent(JSON.stringify(payload || {}));
+    const url = `${APPS_SCRIPT_URL}?action=${encodeURIComponent(action)}&payload=${payloadEnc}&callback=${cbName}`;
 
-        const script = document.createElement("script");
-        script.src = url;
-        script.async = true;
+    const script = document.createElement("script");
+    script.src = url;
+    script.async = true;
 
-        window[cbName] = (resp) => {
-        cleanup();
-        if (!resp || !resp.success) {
-            reject(new Error(resp?.data?.message || "Error desconocido"));
-        } else {
-            resolve(resp.data);
-        }
-        };
+    window[cbName] = (resp) => {
+      cleanup();
+      if (!resp || !resp.success) reject(new Error(resp?.data?.message || "Error desconocido"));
+      else resolve(resp.data);
+    };
 
-        script.onerror = () => {
-        cleanup();
-        reject(new Error("Error de red/URL/permisos al cargar el endpoint"));
-        };
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("No se pudo cargar el endpoint (URL/permisos/red)"));
+    };
 
-        function cleanup() {
-        try { delete window[cbName]; } catch (_) {}
-        try { script.remove(); } catch (_) {}
-        }
-
-        document.body.appendChild(script);
-    });
+    function cleanup() {
+      try { delete window[cbName]; } catch (_) {}
+      try { script.remove(); } catch (_) {}
     }
 
+    document.body.appendChild(script);
+  });
+}
 
   function getSession(){
     return {
