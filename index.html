@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Razona · Ama · Transforma — Juego</title>
+  <style>
+    :root{
+      --navy:#252b57;
+      --gold:#d0a73f;
+      --sand:#e6d7aa;
+      --bg: #0f1228;
+      --card: rgba(230,215,170,0.10);
+      --card2: rgba(208,167,63,0.10);
+      --text: #f5f3ea;
+      --muted: rgba(245,243,234,0.75);
+      --danger: #ff5a6a;
+      --ok: #47d18c;
+      --shadow: 0 16px 40px rgba(0,0,0,0.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 20% 10%, rgba(208,167,63,0.25), transparent 60%),
+        radial-gradient(900px 500px at 80% 0%, rgba(230,215,170,0.18), transparent 55%),
+        radial-gradient(900px 600px at 80% 90%, rgba(37,43,87,0.65), transparent 60%),
+        linear-gradient(180deg, var(--bg), #070815 70%);
+      min-height:100vh;
+      padding: 18px 14px 26px;
+    }
+    .wrap{max-width: 480px; margin: 0 auto;}
+    .brand{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 12px 14px; border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(37,43,87,0.9), rgba(37,43,87,0.25));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(208,167,63,0.20);
+      margin-top: env(safe-area-inset-top);
+    }
+    .brand h1{font-size: 16px; margin:0; letter-spacing: 0.4px}
+    .pill{
+      font-size:12px; padding:7px 10px; border-radius:999px;
+      background: rgba(208,167,63,0.16);
+      border:1px solid rgba(208,167,63,0.35);
+      color: var(--sand);
+    }
+
+    .card{
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--card), rgba(37,43,87,0.10));
+      border: 1px solid rgba(230,215,170,0.22);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .card h2{margin:0 0 10px; font-size: 15px; color: var(--sand); letter-spacing:0.3px}
+    .card p{margin:8px 0; color: var(--muted); line-height:1.35}
+    label{display:block; font-size: 12px; color: var(--sand); margin: 10px 0 6px}
+    input, textarea{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(230,215,170,0.26);
+      background: rgba(15,18,40,0.55);
+      color: var(--text);
+      outline:none;
+      font-size: 15px;
+    }
+    textarea{min-height: 92px; resize: vertical}
+    .row{display:flex; gap:10px}
+    .row > *{flex:1}
+    button{
+      width:100%;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(208,167,63,0.55);
+      background: linear-gradient(135deg, rgba(208,167,63,0.95), rgba(230,215,170,0.85));
+      color: #1b1f3f;
+      font-weight: 700;
+      font-size: 15px;
+      box-shadow: 0 10px 22px rgba(208,167,63,0.20);
+      cursor:pointer;
+    }
+    button.secondary{
+      background: rgba(37,43,87,0.55);
+      border: 1px solid rgba(230,215,170,0.25);
+      color: var(--text);
+      box-shadow:none;
+    }
+    button:disabled{
+      opacity:0.55; cursor:not-allowed;
+    }
+    .small{
+      font-size: 12px; color: rgba(245,243,234,0.70);
+      margin-top: 10px;
+    }
+    .status{
+      display:flex; gap:10px; align-items:flex-start;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(230,215,170,0.22);
+      background: rgba(230,215,170,0.08);
+      margin-top: 10px;
+    }
+    .dot{width:10px; height:10px; border-radius:999px; margin-top:4px; background: var(--gold)}
+    .dot.ok{background: var(--ok)}
+    .dot.bad{background: var(--danger)}
+    .hidden{display:none !important}
+
+    .assignment{
+      border-radius: 16px;
+      border: 1px solid rgba(208,167,63,0.22);
+      background: linear-gradient(180deg, rgba(208,167,63,0.10), rgba(37,43,87,0.08));
+      padding: 12px;
+      margin-top: 10px;
+    }
+    .k{
+      font-size: 12px; color: rgba(230,215,170,0.9); margin: 2px 0;
+      text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    .v{margin: 0 0 8px; color: var(--text); font-size: 15px}
+    table{
+      width:100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow:hidden;
+      border-radius: 14px;
+    }
+    th, td{
+      padding: 10px 10px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(230,215,170,0.14);
+    }
+    th{color: var(--sand); text-align:left; background: rgba(37,43,87,0.35)}
+    td{color: rgba(245,243,234,0.90)}
+    .rank1{color: var(--gold); font-weight:800}
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="brand">
+    <h1>Juego: Pregunta Secreta</h1>
+    <div class="pill" id="pillUser">Sin sesión</div>
+  </div>
+
+  <div class="card" id="cardLogin">
+    <h2>Entrar</h2>
+    <p>Introduce tu nombre y apellido. Te asignaremos una persona y una pregunta.</p>
+
+    <label>Nombre y apellido</label>
+    <input id="fullName" placeholder="Ej. Ana García" autocomplete="name" />
+
+    <button id="btnLogin">Continuar</button>
+    <div class="small">Consejo: si ya entraste antes, escribe exactamente igual tu nombre.</div>
+
+    <div class="status hidden" id="loginStatus">
+      <div class="dot" id="loginDot"></div>
+      <div id="loginMsg"></div>
+    </div>
+  </div>
+
+  <div class="card hidden" id="cardPlay">
+    <h2>Tu misión</h2>
+    <p>Tu objetivo es averiguar la respuesta sin levantar sospechas. Cuando la tengas, escríbela y envíala.</p>
+
+    <div class="assignment" id="assignmentBox">
+      <div class="k">Persona</div>
+      <div class="v" id="targetName">—</div>
+      <div class="k">Pregunta</div>
+      <div class="v" id="questionText">—</div>
+      <div class="k">Estado</div>
+      <div class="v" id="statusText">Pendiente</div>
+    </div>
+
+    <label>Respuesta</label>
+    <textarea id="answerText" placeholder="Escribe aquí la respuesta..."></textarea>
+
+    <button id="btnSubmit">Enviar respuesta</button>
+    <button class="secondary" id="btnRefresh">Actualizar misión / ranking</button>
+    <button class="secondary" id="btnLogout">Salir</button>
+
+    <div class="status hidden" id="playStatus">
+      <div class="dot" id="playDot"></div>
+      <div id="playMsg"></div>
+    </div>
+  </div>
+
+  <div class="card hidden" id="cardRanking">
+    <h2>Ranking</h2>
+    <p>Preguntas respondidas por persona.</p>
+    <div id="rankingWrap"></div>
+  </div>
+</div>
+
+<script>
+
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2DptNv4Rrrz5EBPka09nNKFef5T_UmbmrpggXTFLbXU7Q0CC30ZwgKv0bnP1QZoJ5iA/exec";
+    //Test script load
+    (function(){
+    const cb="cbtest_"+Date.now();
+    window[cb]=(r)=>{ console.log("OK", r); };
+    const s=document.createElement("script");
+    s.src=APPS_SCRIPT_URL+"?action=ping&payload=%7B%7D&callback="+cb;
+    s.onerror=()=>console.error("NO CARGA EL SCRIPT (URL/permisos/red)");
+    document.body.appendChild(s);
+    })();
+
+  // Storage keys
+  const LS_PLAYER_ID = "ps_playerId";
+  const LS_PLAYER_NAME = "ps_playerName";
+  const LS_ASSIGNMENT_ID = "ps_assignmentId";
+
+  // UI refs
+  const pillUser = document.getElementById("pillUser");
+
+  const cardLogin = document.getElementById("cardLogin");
+  const fullNameInput = document.getElementById("fullName");
+  const btnLogin = document.getElementById("btnLogin");
+  const loginStatus = document.getElementById("loginStatus");
+  const loginDot = document.getElementById("loginDot");
+  const loginMsg = document.getElementById("loginMsg");
+
+  const cardPlay = document.getElementById("cardPlay");
+  const targetNameEl = document.getElementById("targetName");
+  const questionTextEl = document.getElementById("questionText");
+  const statusTextEl = document.getElementById("statusText");
+  const answerTextEl = document.getElementById("answerText");
+  const btnSubmit = document.getElementById("btnSubmit");
+  const btnRefresh = document.getElementById("btnRefresh");
+  const btnLogout = document.getElementById("btnLogout");
+  const playStatus = document.getElementById("playStatus");
+  const playDot = document.getElementById("playDot");
+  const playMsg = document.getElementById("playMsg");
+
+  const cardRanking = document.getElementById("cardRanking");
+  const rankingWrap = document.getElementById("rankingWrap");
+
+  function setStatus(box, dot, msgEl, type, msg){
+    box.classList.remove("hidden");
+    dot.classList.remove("ok","bad");
+    if(type === "ok") dot.classList.add("ok");
+    if(type === "bad") dot.classList.add("bad");
+    msgEl.textContent = msg;
+  }
+
+    function api(action, payload) {
+    return new Promise((resolve, reject) => {
+        const cbName = "cb_" + Math.random().toString(36).slice(2);
+        const payloadEnc = encodeURIComponent(JSON.stringify(payload || {}));
+        const url = `${APPS_SCRIPT_URL}?action=${encodeURIComponent(action)}&payload=${payloadEnc}&callback=${cbName}`;
+
+        const script = document.createElement("script");
+        script.src = url;
+        script.async = true;
+
+        window[cbName] = (resp) => {
+        cleanup();
+        if (!resp || !resp.success) {
+            reject(new Error(resp?.data?.message || "Error desconocido"));
+        } else {
+            resolve(resp.data);
+        }
+        };
+
+        script.onerror = () => {
+        cleanup();
+        reject(new Error("Error de red/URL/permisos al cargar el endpoint"));
+        };
+
+        function cleanup() {
+        try { delete window[cbName]; } catch (_) {}
+        try { script.remove(); } catch (_) {}
+        }
+
+        document.body.appendChild(script);
+    });
+    }
+
+
+  function getSession(){
+    return {
+      playerId: localStorage.getItem(LS_PLAYER_ID) || "",
+      fullName: localStorage.getItem(LS_PLAYER_NAME) || "",
+      assignmentId: localStorage.getItem(LS_ASSIGNMENT_ID) || ""
+    };
+  }
+
+  function setSession({playerId, fullName, assignmentId}){
+    if(playerId) localStorage.setItem(LS_PLAYER_ID, playerId);
+    if(fullName) localStorage.setItem(LS_PLAYER_NAME, fullName);
+    if(assignmentId) localStorage.setItem(LS_ASSIGNMENT_ID, assignmentId);
+  }
+
+  function clearSession(){
+    localStorage.removeItem(LS_PLAYER_ID);
+    localStorage.removeItem(LS_PLAYER_NAME);
+    localStorage.removeItem(LS_ASSIGNMENT_ID);
+  }
+
+  function showLoggedOut(){
+    pillUser.textContent = "Sin sesión";
+    cardLogin.classList.remove("hidden");
+    cardPlay.classList.add("hidden");
+    cardRanking.classList.add("hidden");
+  }
+
+  function showLoggedIn(name){
+    pillUser.textContent = name ? name : "En sesión";
+    cardLogin.classList.add("hidden");
+    cardPlay.classList.remove("hidden");
+    cardRanking.classList.remove("hidden");
+  }
+
+  function renderAssignment(a){
+    targetNameEl.textContent = a.targetName || "—";
+    questionTextEl.textContent = a.questionText || "—";
+    statusTextEl.textContent = a.status === "PENDING" ? "Pendiente" : "Respondida";
+    if(a.assignmentId) setSession({ assignmentId: a.assignmentId });
+  }
+
+  function renderRanking(ranking){
+    if(!ranking || !ranking.length){
+      rankingWrap.innerHTML = "<p class='small'>Todavía no hay datos.</p>";
+      return;
+    }
+    let html = "<table><thead><tr><th>#</th><th>Nombre</th><th>Respondidas</th></tr></thead><tbody>";
+    ranking.forEach((row, idx) => {
+      const cls = idx === 0 ? "rank1" : "";
+      html += `<tr>
+        <td class="${cls}">${idx+1}</td>
+        <td class="${cls}">${escapeHtml(row.fullName)}</td>
+        <td class="${cls}">${row.answered}</td>
+      </tr>`;
+    });
+    html += "</tbody></table>";
+    rankingWrap.innerHTML = html;
+  }
+
+  function escapeHtml(s){
+    return String(s || "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  async function refreshAll(){
+    const { playerId, fullName } = getSession();
+    if(!playerId) return;
+
+    // 1) Get / create assignment (server decides if pending exists)
+    const assignment = await api("getOrCreateAssignment", { playerId });
+    renderAssignment(assignment);
+
+    // 2) Ranking
+    const { ranking } = await api("getRanking", {});
+    renderRanking(ranking);
+
+    showLoggedIn(fullName);
+  }
+
+  btnLogin.addEventListener("click", async () => {
+    try{
+      btnLogin.disabled = true;
+      setStatus(loginStatus, loginDot, loginMsg, "ok", "Conectando...");
+
+      const name = fullNameInput.value.trim();
+      const { playerId, fullName } = await api("registerOrLogin", { fullName: name });
+      setSession({ playerId, fullName });
+
+      setStatus(loginStatus, loginDot, loginMsg, "ok", "Listo. Cargando tu misión...");
+      await refreshAll();
+    } catch(e){
+      setStatus(loginStatus, loginDot, loginMsg, "bad", e.message);
+    } finally{
+      btnLogin.disabled = false;
+    }
+  });
+
+  btnSubmit.addEventListener("click", async () => {
+    try{
+      btnSubmit.disabled = true;
+      const { playerId, assignmentId } = getSession();
+      if(!playerId) throw new Error("Sesión inválida. Vuelve a entrar.");
+      if(!assignmentId) throw new Error("No hay misión asignada.");
+
+      setStatus(playStatus, playDot, playMsg, "ok", "Enviando respuesta...");
+      await api("submitAnswer", { playerId, assignmentId, answerText: answerTextEl.value });
+
+      // clear local assignment (server already marked answered)
+      localStorage.removeItem(LS_ASSIGNMENT_ID);
+      answerTextEl.value = "";
+
+      setStatus(playStatus, playDot, playMsg, "ok", "Respuesta enviada. Generando nueva misión...");
+      await refreshAll();
+    } catch(e){
+      setStatus(playStatus, playDot, playMsg, "bad", e.message);
+    } finally{
+      btnSubmit.disabled = false;
+    }
+  });
+
+  btnRefresh.addEventListener("click", async () => {
+    try{
+      btnRefresh.disabled = true;
+      setStatus(playStatus, playDot, playMsg, "ok", "Actualizando...");
+      await refreshAll();
+      setStatus(playStatus, playDot, playMsg, "ok", "Actualizado.");
+    } catch(e){
+      setStatus(playStatus, playDot, playMsg, "bad", e.message);
+    } finally{
+      btnRefresh.disabled = false;
+    }
+  });
+
+  btnLogout.addEventListener("click", () => {
+    clearSession();
+    showLoggedOut();
+  });
+
+  // On load: try resume from storage, and also reconcile with server (pending assignment)
+  (async function init(){
+    const { playerId, fullName } = getSession();
+    if(!playerId){
+      showLoggedOut();
+      return;
+    }
+    try{
+      // If server says there's a pending, it will be returned by getOrCreateAssignment anyway
+      showLoggedIn(fullName);
+      await refreshAll();
+    } catch(e){
+      // If API fails (e.g. permission), force logout
+      clearSession();
+      showLoggedOut();
+    }
+  })();
+</script>
+</body>
+</html>
