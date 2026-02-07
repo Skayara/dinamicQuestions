@@ -222,12 +222,22 @@
 
   let pendingJoinFullName = "";
 
+  // Reemplaza esto con tu URL de Google Apps Script desplegada
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgZHSIDveu0TLXkgzq9TmDMLkZ_nPrrKw9VVb-MJUWjHRFJIzoP6bEjSk0u1B_qY1cIw/exec";
+
   function api(action, payload) {
     return new Promise((resolve, reject) => {
-      google.script.run
-        .withSuccessHandler(resolve)
-        .withFailureHandler((err) => reject(new Error(err && err.message ? err.message : String(err))))
-        .apiDispatch(action, payload);
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, data: payload })
+      })
+      .then(r => r.json())
+      .then(resp => {
+        if (!resp.success) reject(new Error(resp.error || "Error desconocido"));
+        else resolve(resp.data);
+      })
+      .catch(err => reject(new Error(err.message || "Error de red")));
     });
   }
 
