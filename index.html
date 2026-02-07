@@ -223,7 +223,7 @@
   let pendingJoinFullName = "";
 
   // URL de Google Apps Script (con /exec para JSONP)
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMnF6wJdT4jN96_8UvnoQ7nI6Spy5x2WHNteqOex7F5Kn6Ia9vTUjTK2yXLrRpjSvWqw/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxG6yjayf5Fz5nuLLWCnmHhNoeodx1NikcvxB5d3zQIT3fQ4fX3I3Lebq0pjdpUo9B0tw/exec";
 
   function api(action, payload) {
     return new Promise((resolve, reject) => {
@@ -231,19 +231,31 @@
       const payloadEnc = encodeURIComponent(JSON.stringify(payload || {}));
       const url = `${APPS_SCRIPT_URL}?action=${encodeURIComponent(action)}&payload=${payloadEnc}&callback=${cbName}`;
 
+      console.log("[API] Llamando a:", action);
+      console.log("[API] URL:", url);
+
       const script = document.createElement("script");
       script.src = url;
       script.async = true;
 
-      window[cbName] = (resp) => {
+      let timeoutId = setTimeout(() => {
         cleanup();
-        if (!resp || !resp.ok) reject(new Error(resp?.error || "Error desconocido"));
+        reject(new Error("Timeout: No se pudo cargar el endpoint (móvil requiere más tiempo)"));
+      }, 15000); // 15 segundos para móvil
+
+      window[cbName] = (resp) => {
+        console.log("[API] Respuesta recibida:", resp);
+        clearTimeout(timeoutId);
+        cleanup();
+        if (!resp || !resp.ok) reject(new Error(resp?.error || "Error en el servidor"));
         else resolve(resp.data);
       };
 
       script.onerror = () => {
+        console.error("[API] Error al cargar script:", url);
+        clearTimeout(timeoutId);
         cleanup();
-        reject(new Error("No se pudo cargar el endpoint. Verifica la URL del Apps Script."));
+        reject(new Error("No se pudo cargar el endpoint. Verifica: 1) URL correcta, 2) Apps Script desplegado públicamente"));
       };
 
       function cleanup() {
